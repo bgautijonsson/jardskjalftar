@@ -1,0 +1,47 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# jardskjalftar
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+Hægt er að sækja pakkann frá github t.d. með 
+
+```{r, eval = FALSE}
+#install.packages("devtools")
+devtools::install_github("bgautijonsson/jardskjalftar")
+```
+
+Þessi pakki inniheldur allar jarðskjálftamælingar http://hraun.vedur.is/ja/ frá 1994 til dagsins þegar pakkinn var síðast uppfærður. Gögnin má finna í töflunni `jardskjalftar`
+
+```{r}
+library(jardskjalftar)
+head(jardskjalftar)
+```
+
+Ef þú vilt sækja nýrri gögn sem urðu til eftir uppfærslu pakkans er hægt að nota fallið `download_jsk_data()`. Gögnin eru sótt fyrir viku í senn og því getur verið að það sé ekki búið að uppfæra þau í byrjun vikunnar.
+
+```{r}
+cur_date <- Sys.Date()
+cur_year <- lubridate::year(cur_date)
+cur_week <- lubridate::week(cur_date)
+# Sækju fyrir síðustu viku
+cur_week <- cur_week - 1
+newest_data <- download_jsk_data(year = cur_year, week = cur_week)
+
+head(newest_data)
+```
+
