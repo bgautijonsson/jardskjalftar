@@ -37,7 +37,7 @@ og því getur verið að það sé ekki búið að uppfæra þau í byrjun viku
 cur_date <- Sys.Date()
 cur_year <- lubridate::year(cur_date)
 cur_week <- lubridate::week(cur_date)
-# Sækju fyrir síðustu viku
+# Sækjum fyrir síðustu viku
 cur_week <- cur_week - 1
 newest_data <- download_jsk_data(year = cur_year, week = cur_week)
 
@@ -56,4 +56,54 @@ head(newest_data)
 #> 4 2023-11-06 00:21:03  4.90  2.6   1.85 (-22.40709 63.88234)
 #> 5 2023-11-06 00:50:15  5.52  0.52  0.16 (-22.56732 63.84821)
 #> 6 2023-11-06 00:54:26  1.37  0.69 -0.25  (-22.4157 63.87876)
+```
+
+Ég skrifaði fall til að sækja gögn frá <http://skjalftalisa.vedur.is>,
+`download_skjalftalisa_data()`. Gögnin þar gætu verið uppfærð fyrr
+heldur en á <http://hraun.vedur.is/ja/>.
+
+Hér er dæmi um hvernig sækja má gögn úr Skjálftalísu fyrir Nóvember fram
+til nú.
+
+``` r
+start_time <- clock::date_time_build(
+  year = 2023, 
+  month = 11, 
+  day = 1, 
+  hour =  0,
+  minute =  0, 
+  second = 1, 
+  zone = "UTC"
+)
+end_time <- Sys.time()
+
+skjalftalisa_data <- download_skjalftalisa_data(start_time, end_time)
+
+head(skjalftalisa_data)
+#> Simple feature collection with 6 features and 3 fields
+#> Geometry type: POINT
+#> Dimension:     XY
+#> Bounding box:  xmin: -22.51204 ymin: 63.84214 xmax: -22.34315 ymax: 63.89799
+#> Geodetic CRS:  WGS 84
+#> # A tibble: 6 × 4
+#>   time                magnitude magnitude_type             geometry
+#>   <dttm>                  <dbl> <chr>                   <POINT [°]>
+#> 1 2023-11-01 00:07:32      0.3  Mlw            (-22.49863 63.84631)
+#> 2 2023-11-01 00:08:51      0.2  Mlw             (-22.42492 63.8828)
+#> 3 2023-11-01 00:11:41      0.87 Mlw            (-22.34315 63.89799)
+#> 4 2023-11-01 00:12:37      0.93 Mlw            (-22.39736 63.87283)
+#> 5 2023-11-01 00:13:18      0.5  Mlw            (-22.51204 63.84214)
+#> 6 2023-11-01 00:15:16      0.83 Mlw             (-22.46237 63.8552)
+```
+
+Við sjáum að gögnin frá Skjálftalísu eru glæný.
+
+``` r
+max(skjalftalisa_data$time)
+#> [1] "2023-11-14 07:42:27 UTC"
+```
+
+``` r
+Sys.time()
+#> [1] "2023-11-14 08:15:24 GMT"
 ```

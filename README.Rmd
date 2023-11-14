@@ -38,10 +38,41 @@ Ef þú vilt sækja nýrri gögn sem urðu til eftir uppfærslu pakkans er hægt
 cur_date <- Sys.Date()
 cur_year <- lubridate::year(cur_date)
 cur_week <- lubridate::week(cur_date)
-# Sækju fyrir síðustu viku
+# Sækjum fyrir síðustu viku
 cur_week <- cur_week - 1
 newest_data <- download_jsk_data(year = cur_year, week = cur_week)
 
 head(newest_data)
+```
+
+Ég skrifaði fall til að sækja gögn frá http://skjalftalisa.vedur.is, `download_skjalftalisa_data()`. Gögnin þar gætu verið uppfærð fyrr heldur en á http://hraun.vedur.is/ja/. 
+
+Hér er dæmi um hvernig sækja má gögn úr Skjálftalísu fyrir Nóvember fram til nú.
+
+```{r}
+start_time <- clock::date_time_build(
+  year = 2023, 
+  month = 11, 
+  day = 1, 
+  hour =  0,
+  minute =  0, 
+  second = 1, 
+  zone = "GMT"
+)
+end_time <- Sys.time()
+
+skjalftalisa_data <- download_skjalftalisa_data(start_time, end_time)
+
+head(skjalftalisa_data)
+```
+
+Við sjáum að gögnin frá Skjálftalísu eru glæný. 
+
+```{r}
+max(skjalftalisa_data$time)
+```
+
+```{r}
+Sys.time()
 ```
 
