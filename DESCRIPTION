@@ -15,6 +15,7 @@ Imports:
     glue,
     httr,
     janitor,
+    lubridate,
     readr,
     sf,
     stringr
