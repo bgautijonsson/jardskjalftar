@@ -76,3 +76,43 @@ max(skjalftalisa_data$time)
 Sys.time()
 ```
 
+
+
+Það eru einhver takmörk á hvað má sækja mikið af gögnum í einu, en það er tiltölulega auðvelt að sækja gögn fyrir nokkur ár með því að skipta því upp í eina beiðni fyrir hvert ár
+
+```{r}
+download_skjalftalisa_year <- function(year) {
+  start_time <- clock::date_time_build(
+    year, 1, 1, 0, 0, 1, zone = "GMT"
+  )
+  
+  end_time <- clock::date_time_build(
+    year, 12, 31, 23, 59, 59, zone = "GMT"
+  )
+  
+  download_skjalftalisa_data(
+    start_time,
+    end_time
+  )
+}
+
+
+d <- purrr::map_dfr(2020:2022, download_skjalftalisa_year)
+
+start_time_2023 <- clock::date_time_build(
+  2023, 1, 1, 0, 0, 1, zone = "GMT"
+)
+
+end_time_2023 <- Sys.time()
+
+d_2023 <- download_skjalftalisa_data(
+  start_time_2023,
+  end_time_2023
+)
+
+
+d |> 
+  dplyr::bind_rows(d_2023) |> 
+  dplyr::glimpse()
+```
+

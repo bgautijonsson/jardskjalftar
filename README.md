@@ -73,7 +73,7 @@ start_time <- clock::date_time_build(
   hour =  0,
   minute =  0, 
   second = 1, 
-  zone = "UTC"
+  zone = "GMT"
 )
 end_time <- Sys.time()
 
@@ -100,10 +100,56 @@ Við sjáum að gögnin frá Skjálftalísu eru glæný.
 
 ``` r
 max(skjalftalisa_data$time)
-#> [1] "2023-11-14 07:42:27 UTC"
+#> [1] "2023-11-14 12:39:07 UTC"
 ```
 
 ``` r
 Sys.time()
-#> [1] "2023-11-14 08:15:24 GMT"
+#> [1] "2023-11-14 13:13:19 GMT"
+```
+
+Það eru einhver takmörk á hvað má sækja mikið af gögnum í einu, en það
+er tiltölulega auðvelt að sækja gögn fyrir nokkur ár með því að skipta
+því upp í eina beiðni fyrir hvert ár
+
+``` r
+download_skjalftalisa_year <- function(year) {
+  start_time <- clock::date_time_build(
+    year, 1, 1, 0, 0, 1, zone = "GMT"
+  )
+  
+  end_time <- clock::date_time_build(
+    year, 12, 31, 23, 59, 59, zone = "GMT"
+  )
+  
+  download_skjalftalisa_data(
+    start_time,
+    end_time
+  )
+}
+
+
+d <- purrr::map_dfr(2020:2022, download_skjalftalisa_year)
+
+start_time_2023 <- clock::date_time_build(
+  2023, 1, 1, 0, 0, 1, zone = "GMT"
+)
+
+end_time_2023 <- Sys.time()
+
+d_2023 <- download_skjalftalisa_data(
+  start_time_2023,
+  end_time_2023
+)
+
+
+d |> 
+  dplyr::bind_rows(d_2023) |> 
+  dplyr::glimpse()
+#> Rows: 146,554
+#> Columns: 4
+#> $ time           <dttm> 2020-01-05 12:27:11, 2020-01-05 13:21:59, 2020-01-05 1…
+#> $ magnitude      <dbl> 1.69, 1.04, 1.26, 0.88, 2.79, 2.10, 2.75, 0.49, 0.58, 0…
+#> $ magnitude_type <chr> "Mlw", "Mlw", "Mlw", "Mlw", "Mlw", "Mlw", "Mlw", "Mlw",…
+#> $ geometry       <POINT [°]> POINT (-17.8749 66.64684), POINT (-17.00638 65.87…
 ```

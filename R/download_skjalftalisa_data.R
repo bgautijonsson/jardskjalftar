@@ -54,10 +54,16 @@ download_skjalftalisa_data <- function(
   )
 
 
-  res <- tibble::tibble(
-    data = list(httr::content(POST_response, "parsed")
+  res <- try(
+    tibble::tibble(
+      data = list(httr::content(POST_response, "parsed")
+      )
     )
   )
+
+  if ("try-error" %in% class(res)) {
+    stop("There was an error. Check your datetime object or try to split your request into smaller requests.")
+  }
 
   d <- res |>
     tidyr::unnest(data) |>
