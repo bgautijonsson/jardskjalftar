@@ -40,32 +40,23 @@ download_skjalftalisa_data <- function(
     end_time = end_time
   )
 
-  POST_response <- httr::POST(
-    url,
-    httr::add_headers(
-      "Accept" = "*/*",
-      "Accept-Language" = "en-GB,en-US;q=0.9,en;q=0.8",
-      "Content-Type" = "application/json",
-      "Host" = "api.vedur.is",
-      "Origin" = "http://skjalftalisa.vedur.is",
-      "Referer" = "http://skjalftalisa.vedur.is"
-    ),
-    body = query
+  req <- httr2::request(url) |>
+    httr2::req_body_json(query)
+
+  resp <- try(
+    req |>
+      httr2::req_perform()
   )
 
-
-  res <- try(
-    tibble::tibble(
-      data = list(httr::content(POST_response, "parsed")
-      )
-    )
-  )
-
-  if ("try-error" %in% class(res)) {
-    stop("There was an error. Check your datetime object or try to split your request into smaller requests.")
+  if ("try-error" %in% class(resp)) {
+    stop("There was an error. Check your datetime object (must contain numbers for hours, minutes and seconds) or try to split your request into smaller requests. You can also compare the query built with build_skalftalisa_query(start_time, end_time, to_json = TRUE) to the example query in example_skjalftalisa_query()")
   }
 
-  d <- res |>
+  resp_body <- resp |> httr2::resp_body_json()
+
+  d <- tibble::tibble(
+    data = list(resp_body)
+  ) |>
     tidyr::unnest(data) |>
     tidyr::unnest_wider(data) |>
     tidyr::unnest_longer(dplyr::everything())
@@ -106,18 +97,19 @@ download_skjalftalisa_data <- function(
 build_skjalftalisa_query <- function(
     start_time,
     end_time,
+    to_json = FALSE,
     depth_min = 0,
     depth_max = 25,
     size_min = 0,
     size_max = 7,
     magnitude_preference = c("Mlw", "Autmag"),
-    event_type = "qu",
-    originating_system = "SIL picks",
+    event_type = list("qu"),
+    originating_system = list("SIL picks"),
     area = c(68, 61, -32, -4),
     fields = c("event_id", "lat", "long", "time", "magnitude", "event_type", "originating_system")
 ) {
 
-  list(
+  out <- list(
     start_time = jsonlite::unbox(start_time),
     end_time = jsonlite::unbox(end_time),
     depth_min = jsonlite::unbox(depth_min),
@@ -134,6 +126,20 @@ build_skjalftalisa_query <- function(
       c(area[1], area[4])
     ),
     fields = fields
-  ) |>
-    jsonlite::toJSON()
+  )
+
+  if (isTRUE(to_json)) {
+    return(jsonlite::toJSON(out, auto_unbox = TRUE))
+  }
+
+  out
+}
+
+
+#' An example of a JSON body form a POST request to http://skjalftalisa.vedur.is. Useful for debugging.
+#'
+#' @return A character vector showing the example JSON body
+#' @export
+example_skjalftalisa_query <- function() {
+  writeLines('{"start_time":"2023-11-08 09:43:00","end_time":"2023-11-15 09:43:00","depth_min":0,"depth_max":25,"size_min":0,"size_max":7,"magnitude_preference":["Mlw","Autmag"],"event_type":["qu"],"originating_system":["SIL picks"],"area":[[68,-32],[61,-32],[61,-4],[68,-4]],"fields":["event_id","lat","long","time","magnitude","event_type","originating_system"]}')
 }
