@@ -7,20 +7,46 @@
 build_skjalftalisa_query(
   start_time,
   end_time,
+  to_json = FALSE,
   depth_min = 0,
   depth_max = 25,
   size_min = 0,
   size_max = 7,
   magnitude_preference = c("Mlw", "Autmag"),
-  event_type = "qu",
-  originating_system = "SIL picks",
+  event_type = list("qu"),
+  originating_system = list("SIL picks"),
   area = c(68, 61, -32, -4),
   fields = c("event_id", "lat", "long", "time", "magnitude", "event_type",
     "originating_system")
 )
 }
 \arguments{
-\item{fields}{}
+\item{start_time}{A datetime object or a string}
+
+\item{end_time}{A datetime object or a string}
+
+\item{to_json}{Should the R list be converted to a JSON string?}
+
+\item{depth_min}{The minimum earthquake depth to fetch (default = 0)}
+
+\item{depth_max}{The maximum earthquake depth to fetch (default = 25)}
+
+\item{size_min}{The minimum earthquake size to fetch (default = 0)}
+
+\item{size_max}{The maximum earthquake size to fetch (default = 7)}
+
+\item{magnitude_preference}{Preferred magnitude measure -"Mlw" or "Autmag"- (Default is "Mlw")}
+
+\item{event_type}{The type of event to fetch (default is "qu")}
+
+\item{originating_system}{The originating system to fetch from (default is "SIL picks")}
+
+\item{area}{Geographical area to fetch from (default is a bounding box around Iceland)}
+
+\item{fields}{The fields to fetch data on from the service.}
+}
+\value{
+A list/json string containing the query to be sent
 }
 \description{
 Helper function for making a JSON POST query from input variables

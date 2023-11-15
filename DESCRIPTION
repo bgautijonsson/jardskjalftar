@@ -1,6 +1,6 @@
 Package: jardskjalftar
 Title: Icelandic earthquake data from http://hraun.vedur.is/ja/
-Version: 0.0.1
+Version: 0.0.2
 Authors@R: 
     person("Brynjólfur Gauti", "Guðrúnar Jónsson", , "bgautijonsson@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
@@ -13,7 +13,6 @@ Imports:
     clock,
     dplyr,
     glue,
-    httr,
     httr2,
     janitor,
     lubridate,

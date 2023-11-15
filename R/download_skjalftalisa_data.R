@@ -1,18 +1,18 @@
 #' Download newest Icelandic earthquake data from http://skjalftalisa.vedur.is
 #'
-#' @param start_time
-#' @param end_time
-#' @param depth_min
-#' @param depth_max
-#' @param size_min
-#' @param size_max
-#' @param magnitude_preference
-#' @param event_type
-#' @param originating_system
-#' @param area
-#' @param fields
+#' @param start_time A datetime object or a string
+#' @param end_time A datetime object or a string
+#' @param depth_min The minimum earthquake depth to fetch (default = 0)
+#' @param depth_max The maximum earthquake depth to fetch (default = 25)
+#' @param size_min The minimum earthquake size to fetch (default = 0)
+#' @param size_max The maximum earthquake size to fetch (default = 7)
+#' @param magnitude_preference Preferred magnitude measure -"Mlw" or "Autmag"- (Default is "Mlw")
+#' @param event_type The type of event to fetch (default is "qu")
+#' @param originating_system The originating system to fetch from (default is "SIL picks")
+#' @param area Geographical area to fetch from (default is a bounding box around Iceland)
+#' @param fields The fields to fetch data on from the service.
 #'
-#' @return
+#' @return An {sf} table containing magnitude, location and timestamp of recorded earthquakes
 #' @export
 #'
 #' @examples
@@ -81,19 +81,20 @@ download_skjalftalisa_data <- function(
 
 #' Helper function for making a JSON POST query from input variables
 #'
-#' @param start_time
-#' @param end_time
-#' @param depth_min
-#' @param depth_max
-#' @param size_min
-#' @param size_max
-#' @param magnitude_preference
-#' @param event_type
-#' @param originating_system
-#' @param area
-#' @param fields
+#' @param start_time A datetime object or a string
+#' @param end_time A datetime object or a string
+#' @param to_json Should the R list be converted to a JSON string?
+#' @param depth_min The minimum earthquake depth to fetch (default = 0)
+#' @param depth_max The maximum earthquake depth to fetch (default = 25)
+#' @param size_min The minimum earthquake size to fetch (default = 0)
+#' @param size_max The maximum earthquake size to fetch (default = 7)
+#' @param magnitude_preference Preferred magnitude measure -"Mlw" or "Autmag"- (Default is "Mlw")
+#' @param event_type The type of event to fetch (default is "qu")
+#' @param originating_system The originating system to fetch from (default is "SIL picks")
+#' @param area Geographical area to fetch from (default is a bounding box around Iceland)
+#' @param fields The fields to fetch data on from the service.
 #'
-#' @return
+#' @return A list/json string containing the query to be sent
 build_skjalftalisa_query <- function(
     start_time,
     end_time,

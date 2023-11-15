@@ -20,7 +20,30 @@ download_skjalftalisa_data(
 )
 }
 \arguments{
-\item{fields}{}
+\item{start_time}{A datetime object or a string}
+
+\item{end_time}{A datetime object or a string}
+
+\item{depth_min}{The minimum earthquake depth to fetch (default = 0)}
+
+\item{depth_max}{The maximum earthquake depth to fetch (default = 25)}
+
+\item{size_min}{The minimum earthquake size to fetch (default = 0)}
+
+\item{size_max}{The maximum earthquake size to fetch (default = 7)}
+
+\item{magnitude_preference}{Preferred magnitude measure -"Mlw" or "Autmag"- (Default is "Mlw")}
+
+\item{event_type}{The type of event to fetch (default is "qu")}
+
+\item{originating_system}{The originating system to fetch from (default is "SIL picks")}
+
+\item{area}{Geographical area to fetch from (default is a bounding box around Iceland)}
+
+\item{fields}{The fields to fetch data on from the service.}
+}
+\value{
+An {sf} table containing magnitude, location and timestamp of recorded earthquakes
 }
 \description{
 Download newest Icelandic earthquake data from http://skjalftalisa.vedur.is

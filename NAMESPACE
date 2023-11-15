@@ -2,3 +2,4 @@
 
 export(download_jsk_data)
 export(download_skjalftalisa_data)
+export(example_skjalftalisa_query)
