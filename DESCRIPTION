@@ -16,6 +16,7 @@ Imports:
     httr2,
     janitor,
     lubridate,
+    purrr,
     readr,
     sf,
     stringr

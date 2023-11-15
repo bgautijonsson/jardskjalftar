@@ -16,7 +16,9 @@ download_skjalftalisa_data(
   originating_system = "SIL picks",
   area = c(68, 61, -32, -4),
   fields = c("event_id", "lat", "long", "time", "magnitude", "event_type",
-    "originating_system")
+    "originating_system"),
+  max_weeks_per_request = 16,
+  request_rate_per_second = 2
 )
 }
 \arguments{
@@ -41,6 +43,10 @@ download_skjalftalisa_data(
 \item{area}{Geographical area to fetch from (default is a bounding box around Iceland)}
 
 \item{fields}{The fields to fetch data on from the service.}
+
+\item{max_weeks_per_request}{For large requests (large duration), how many weeks should there be in each smaller sub-request? (Default 16 weeks per request)}
+
+\item{request_rate_per_second}{How many requests to send per second for larger durations? (Default is 2 per second)}
 }
 \value{
 An {sf} table containing magnitude, location and timestamp of recorded earthquakes

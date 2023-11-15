@@ -1,3 +1,11 @@
+#' Fetch the Skjálftalisa URL
+#'
+#' @return A character string
+skjalftalisa_url <- function() {
+  "https://api.vedur.is/skjalftalisa/v1/quake/array"
+}
+
+
 #' Download newest Icelandic earthquake data from http://skjalftalisa.vedur.is
 #'
 #' @param start_time A datetime object or a string
@@ -11,6 +19,8 @@
 #' @param originating_system The originating system to fetch from (default is "SIL picks")
 #' @param area Geographical area to fetch from (default is a bounding box around Iceland)
 #' @param fields The fields to fetch data on from the service.
+#' @param max_weeks_per_request For large requests (large duration), how many weeks should there be in each smaller sub-request? (Default 16 weeks per request)
+#' @param request_rate_per_second How many requests to send per second for larger durations? (Default is 2 per second)
 #'
 #' @return An {sf} table containing magnitude, location and timestamp of recorded earthquakes
 #' @export
@@ -31,32 +41,48 @@ download_skjalftalisa_data <- function(
     event_type = "qu",
     originating_system = "SIL picks",
     area = c(68, 61, -32, -4),
-    fields = c("event_id", "lat", "long", "time", "magnitude", "event_type", "originating_system")
+    fields = c("event_id", "lat", "long", "time", "magnitude", "event_type", "originating_system"),
+    max_weeks_per_request = 16,
+    request_rate_per_second = 2
 ) {
-  url <- "https://api.vedur.is/skjalftalisa/v1/quake/array"
 
-  query <- build_skjalftalisa_query(
-    start_time = start_time,
-    end_time = end_time
-  )
+  duration <- lubridate:::`%--%`(start_time, end_time)
+  n_weeks <- duration / lubridate::weeks(1)
+  n_whole_weeks <- max_weeks_per_request * floor(n_weeks / max_weeks_per_request)
+  whole_week_seq <- seq(0, n_whole_weeks, by = max_weeks_per_request)
 
-  req <- httr2::request(url) |>
-    httr2::req_body_json(query)
+  start_times <- start_time + lubridate::weeks(whole_week_seq)
+  end_times <- c(start_times[-1], end_time)
+
+  if (n_whole_weeks == n_weeks) {
+    start_times <- start_times[-length(start_times)]
+    end_times <- end_time[-length(end_times)]
+  }
+
+  queries <- purrr::map2(start_times, end_times, build_skjalftalisa_query)
+
+  build_req <- function(query) {
+    httr2::request(skjalftalisa_url()) |>
+      httr2::req_body_json(query) |>
+      httr2::req_throttle(rate = request_rate_per_second)
+  }
+
+  reqs <- purrr::map(queries, build_req)
 
   resp <- try(
-    req |>
-      httr2::req_perform()
+    httr2::req_perform_sequential(reqs)
   )
 
   if ("try-error" %in% class(resp)) {
     stop("There was an error. Check your datetime object (must contain numbers for hours, minutes and seconds) or try to split your request into smaller requests. You can also compare the query built with build_skalftalisa_query(start_time, end_time, to_json = TRUE) to the example query in example_skjalftalisa_query()")
   }
 
-  resp_body <- resp |> httr2::resp_body_json()
+  resp_body <- purrr::map(resp, httr2::resp_body_json)
 
   d <- tibble::tibble(
     data = list(resp_body)
   ) |>
+    tidyr::unnest(data) |>
     tidyr::unnest(data) |>
     tidyr::unnest_wider(data) |>
     tidyr::unnest_longer(dplyr::everything())
@@ -136,6 +162,9 @@ build_skjalftalisa_query <- function(
   out
 }
 
+split_into_smaller_durations <- function(start_time, end_time) {
+
+}
 
 #' An example of a JSON body form a POST request to http://skjalftalisa.vedur.is. Useful for debugging.
 #'
