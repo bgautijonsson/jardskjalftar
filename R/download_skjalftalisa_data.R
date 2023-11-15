@@ -42,7 +42,7 @@ download_skjalftalisa_data <- function(
     originating_system = "SIL picks",
     area = c(68, 61, -32, -4),
     fields = c("event_id", "lat", "long", "time", "magnitude", "event_type", "originating_system"),
-    max_weeks_per_request = 16,
+    max_weeks_per_request = 32,
     request_rate_per_second = 2
 ) {
 

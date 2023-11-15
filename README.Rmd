@@ -50,16 +50,8 @@ head(newest_data)
 Hér er dæmi um hvernig sækja má gögn úr Skjálftalísu fyrir Nóvember fram til nú.
 
 ```{r}
-start_time <- clock::date_time_build(
-  year = 2023, 
-  month = 11, 
-  day = 1, 
-  hour =  0,
-  minute =  0, 
-  second = 1, 
-  zone = "GMT"
-)
 end_time <- Sys.time()
+start_time <- end_time - lubridate::days(7)
 
 skjalftalisa_data <- download_skjalftalisa_data(start_time, end_time)
 
@@ -77,42 +69,14 @@ Sys.time()
 ```
 
 
-
-Það eru einhver takmörk á hvað má sækja mikið af gögnum í einu, en það er tiltölulega auðvelt að sækja gögn fyrir nokkur ár með því að skipta því upp í eina beiðni fyrir hvert ár
-
-```{r}
-download_skjalftalisa_year <- function(year) {
-  start_time <- clock::date_time_build(
-    year, 1, 1, 0, 0, 1, zone = "GMT"
-  )
-  
-  end_time <- clock::date_time_build(
-    year, 12, 31, 23, 59, 59, zone = "GMT"
-  )
-  
-  download_skjalftalisa_data(
-    start_time,
-    end_time
-  )
-}
+Fallið sér svo um að skipta stórum beiðnum upp í smærri beiðnir. Ef sótt eru gögn fyrir langt tímabil mun fallið reyna að skipta því upp í smærri tímabil og framkvæma fyrirspurnir fyrir hvert minna tímabil.
 
 
-d <- purrr::map_dfr(2020:2022, download_skjalftalisa_year)
+```{r, cache=TRUE}
+end_time <- Sys.time()
+start_time <- Sys.time() - lubridate::years(5)
 
-start_time_2023 <- clock::date_time_build(
-  2023, 1, 1, 0, 0, 1, zone = "GMT"
-)
-
-end_time_2023 <- Sys.time()
-
-d_2023 <- download_skjalftalisa_data(
-  start_time_2023,
-  end_time_2023
-)
-
-
-d |> 
-  dplyr::bind_rows(d_2023) |> 
-  dplyr::glimpse()
+d <- download_skjalftalisa_data(start_time, end_time)
+dplyr::glimpse(d)
 ```
 

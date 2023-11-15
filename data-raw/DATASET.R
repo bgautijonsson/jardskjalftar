@@ -6,7 +6,7 @@ jardskjalftar <- tidyr::crossing(
 ) |>
   dplyr::rowwise() |>
   dplyr::reframe(
-    download_data(year, week)
+    download_jsk_data(year, week)
   )
 
 usethis::use_data(jardskjalftar, overwrite = TRUE)

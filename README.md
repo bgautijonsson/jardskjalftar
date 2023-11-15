@@ -66,16 +66,8 @@ Hér er dæmi um hvernig sækja má gögn úr Skjálftalísu fyrir Nóvember fra
 til nú.
 
 ``` r
-start_time <- clock::date_time_build(
-  year = 2023, 
-  month = 11, 
-  day = 1, 
-  hour =  0,
-  minute =  0, 
-  second = 1, 
-  zone = "GMT"
-)
 end_time <- Sys.time()
+start_time <- end_time - lubridate::days(7)
 
 skjalftalisa_data <- download_skjalftalisa_data(start_time, end_time)
 
@@ -83,73 +75,49 @@ head(skjalftalisa_data)
 #> Simple feature collection with 6 features and 3 fields
 #> Geometry type: POINT
 #> Dimension:     XY
-#> Bounding box:  xmin: -22.51204 ymin: 63.84214 xmax: -22.34315 ymax: 63.89799
+#> Bounding box:  xmin: -22.44645 ymin: 63.86431 xmax: -22.38761 ymax: 63.88214
 #> Geodetic CRS:  WGS 84
 #> # A tibble: 6 × 4
 #>   time                magnitude magnitude_type             geometry
 #>   <dttm>                  <dbl> <chr>                   <POINT [°]>
-#> 1 2023-11-01 00:07:32      0.3  Mlw            (-22.49863 63.84631)
-#> 2 2023-11-01 00:08:51      0.2  Mlw             (-22.42492 63.8828)
-#> 3 2023-11-01 00:11:41      0.87 Mlw            (-22.34315 63.89799)
-#> 4 2023-11-01 00:12:37      0.93 Mlw            (-22.39736 63.87283)
-#> 5 2023-11-01 00:13:18      0.5  Mlw            (-22.51204 63.84214)
-#> 6 2023-11-01 00:15:16      0.83 Mlw             (-22.46237 63.8552)
+#> 1 2023-11-08 19:03:26      0.73 Mlw            (-22.44645 63.86431)
+#> 2 2023-11-08 19:04:57      1.01 Mlw            (-22.39348 63.87948)
+#> 3 2023-11-08 19:05:12      1.1  Mlw            (-22.38761 63.88147)
+#> 4 2023-11-08 19:05:32      0.15 Mlw            (-22.43946 63.88161)
+#> 5 2023-11-08 19:09:03      0.33 Mlw            (-22.41142 63.87582)
+#> 6 2023-11-08 19:14:40      0.26 Mlw            (-22.43895 63.88214)
 ```
 
 Við sjáum að gögnin frá Skjálftalísu eru glæný.
 
 ``` r
 max(skjalftalisa_data$time)
-#> [1] "2023-11-14 12:39:07 UTC"
+#> [1] "2023-11-15 18:25:11 UTC"
 ```
 
 ``` r
 Sys.time()
-#> [1] "2023-11-14 13:13:19 GMT"
+#> [1] "2023-11-15 18:55:27 GMT"
 ```
 
-Það eru einhver takmörk á hvað má sækja mikið af gögnum í einu, en það
-er tiltölulega auðvelt að sækja gögn fyrir nokkur ár með því að skipta
-því upp í eina beiðni fyrir hvert ár
+Fallið sér svo um að skipta stórum beiðnum upp í smærri beiðnir. Ef sótt
+eru gögn fyrir langt tímabil mun fallið reyna að skipta því upp í smærri
+tímabil og framkvæma fyrirspurnir fyrir hvert minna tímabil.
 
 ``` r
-download_skjalftalisa_year <- function(year) {
-  start_time <- clock::date_time_build(
-    year, 1, 1, 0, 0, 1, zone = "GMT"
-  )
-  
-  end_time <- clock::date_time_build(
-    year, 12, 31, 23, 59, 59, zone = "GMT"
-  )
-  
-  download_skjalftalisa_data(
-    start_time,
-    end_time
-  )
-}
+end_time <- Sys.time()
+start_time <- Sys.time() - lubridate::years(5)
 
-
-d <- purrr::map_dfr(2020:2022, download_skjalftalisa_year)
-
-start_time_2023 <- clock::date_time_build(
-  2023, 1, 1, 0, 0, 1, zone = "GMT"
-)
-
-end_time_2023 <- Sys.time()
-
-d_2023 <- download_skjalftalisa_data(
-  start_time_2023,
-  end_time_2023
-)
-
-
-d |> 
-  dplyr::bind_rows(d_2023) |> 
-  dplyr::glimpse()
-#> Rows: 146,554
+d <- download_skjalftalisa_data(start_time, end_time)
+#> Iterating ■■■■■■■■ 22% | ETA: 5sIterating ■■■■■■■■■■■ 33% | ETA: 6sIterating
+#> ■■■■■■■■■■■■■■ 44% | ETA: 5sIterating ■■■■■■■■■■■■■■■■■■ 56% | ETA: 4sIterating
+#> ■■■■■■■■■■■■■■■■■■■■■ 67% | ETA: 3sIterating ■■■■■■■■■■■■■■■■■■■■■■■■ 78% |
+#> ETA: 2sIterating ■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 89% | ETA: 1s
+dplyr::glimpse(d)
+#> Rows: 172,470
 #> Columns: 4
-#> $ time           <dttm> 2020-01-05 12:27:11, 2020-01-05 13:21:59, 2020-01-05 1…
-#> $ magnitude      <dbl> 1.69, 1.04, 1.26, 0.88, 2.79, 2.10, 2.75, 0.49, 0.58, 0…
+#> $ time           <dttm> 2018-11-15 19:25:39, 2018-11-15 20:17:22, 2018-11-15 2…
+#> $ magnitude      <dbl> 0.22, 0.69, 1.10, 1.57, 0.76, 1.32, 1.70, 0.80, 0.21, 1…
 #> $ magnitude_type <chr> "Mlw", "Mlw", "Mlw", "Mlw", "Mlw", "Mlw", "Mlw", "Mlw",…
-#> $ geometry       <POINT [°]> POINT (-17.8749 66.64684), POINT (-17.00638 65.87…
+#> $ geometry       <POINT [°]> POINT (-21.26286 63.93715), POINT (-20.70159 63.9…
 ```
