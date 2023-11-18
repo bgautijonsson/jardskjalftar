@@ -38,10 +38,10 @@ download_skjalftalisa_data <- function(
     size_min = 0,
     size_max = 7,
     magnitude_preference = c("Mlw", "Autmag"),
-    event_type = "qu",
-    originating_system = "SIL picks",
+    event_type = list("qu"),
+    originating_system = list("SIL picks"),
     area = c(68, 61, -32, -4),
-    fields = c("event_id", "lat", "long", "time", "magnitude", "event_type", "originating_system"),
+    fields = c("event_id", "lat", "long", "time", "magnitude", "depth", "event_type", "originating_system"),
     max_weeks_per_request = 32,
     request_rate_per_second = 2
 ) {
@@ -59,7 +59,23 @@ download_skjalftalisa_data <- function(
     end_times <- end_time[-length(end_times)]
   }
 
-  queries <- purrr::map2(start_times, end_times, build_skjalftalisa_query)
+  queries <- purrr::map2(
+    start_times,
+    end_times,
+    \(x, y) build_skjalftalisa_query(
+      start_time = x,
+      end_time = y,
+      depth_min = depth_min,
+      depth_max = depth_max,
+      size_min = size_min,
+      size_max = size_max,
+      magnitude_preference = magnitude_preference,
+      event_type = event_type,
+      originating_system = originating_system,
+      area = area,
+      fields = fields
+    )
+  )
 
   build_req <- function(query) {
     httr2::request(skjalftalisa_url()) |>
@@ -133,7 +149,7 @@ build_skjalftalisa_query <- function(
     event_type = list("qu"),
     originating_system = list("SIL picks"),
     area = c(68, 61, -32, -4),
-    fields = c("event_id", "lat", "long", "time", "magnitude", "event_type", "originating_system")
+    fields = c("event_id", "lat", "long", "time", "magnitude", "depth", "event_type", "originating_system")
 ) {
 
   out <- list(

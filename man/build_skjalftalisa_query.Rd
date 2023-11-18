@@ -16,7 +16,7 @@ build_skjalftalisa_query(
   event_type = list("qu"),
   originating_system = list("SIL picks"),
   area = c(68, 61, -32, -4),
-  fields = c("event_id", "lat", "long", "time", "magnitude", "event_type",
+  fields = c("event_id", "lat", "long", "time", "magnitude", "depth", "event_type",
     "originating_system")
 )
 }

@@ -12,12 +12,12 @@ download_skjalftalisa_data(
   size_min = 0,
   size_max = 7,
   magnitude_preference = c("Mlw", "Autmag"),
-  event_type = "qu",
-  originating_system = "SIL picks",
+  event_type = list("qu"),
+  originating_system = list("SIL picks"),
   area = c(68, 61, -32, -4),
-  fields = c("event_id", "lat", "long", "time", "magnitude", "event_type",
+  fields = c("event_id", "lat", "long", "time", "magnitude", "depth", "event_type",
     "originating_system"),
-  max_weeks_per_request = 16,
+  max_weeks_per_request = 32,
   request_rate_per_second = 2
 )
 }
