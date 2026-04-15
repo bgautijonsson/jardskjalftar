@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 # jardskjalftar
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/bgautijonsson/jardskjalftar/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bgautijonsson/jardskjalftar/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 Hægt er að sækja pakkann frá github t.d. með 

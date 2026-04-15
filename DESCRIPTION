@@ -1,9 +1,11 @@
 Package: jardskjalftar
 Title: Icelandic earthquake data from http://hraun.vedur.is/ja/
 Version: 0.0.2
-Authors@R: 
-    person("Brynjólfur Gauti", "Guðrúnar Jónsson", , "bgautijonsson@gmail.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+Authors@R:
+    person("Brynjólfur Gauti", "Jónsson",
+           email = "brynjolfur@metill.is",
+           role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-4730-5584"))
 Description: This package gives access to recent Icelandic earthquake data
 License: GPL (>= 3)
 Encoding: UTF-8
